@@ -1,0 +1,2 @@
+npx prettier index.html  --tab-width 4  --write
+npx prettier index.html  --tab-width 4  --print-width 300 --write

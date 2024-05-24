@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File System Access API チャット</title>
+  <meta http-equiv="Content-Type" 
+      content="text/html; charset=utf-8">
+</head>
+<body>
+  <button onclick="createChatRoomFile()">チャットルーム作成</button>
+  <button onclick="openChatRoomFile()">チャットルームに入室</button>
+  <br>
+  <h1 id="room-name"></h1>
+  <p>ユーザー名：<input id="user-name" type="text" /></p>
+  <p><textarea id="comment-body" style="width: 80%; height: 80px;"></textarea></p>
+  <p><button onClick="post()">投稿</button></p>
+
+  <div id="comment-list"></div>
+
+  <script>
+    //ベースとなるチャットルームのオブジェクト
+    let chatRoomObject = {};
+    //チャットルームファイルのロードのインターバルを管理するオブジェクト
+    let fileLoadInterval = null;
+    //入室中のチャットルームファイルのハンドラ
+    let roomFileHandler = null;
+
+    /**
+     * チャットルーム作成処理
+     */
+    async function createChatRoomFile() {
+      //ファイル保存プロンプトの呼び出し
+      const option = {
+        startIn : "desktop",
+        types: [
+            {
+              description: "チャットルームファイル",
+              accept: { "application/json": [".room"] },
+            },
+          ],
+        };
+      const handler = await window.showSaveFilePicker(option);
+
+      //ベースとなるチャットルームオブジェクトの作成
+      const baseChatRoomObject = {
+        commentList : []
+      }
+
+      //JSONフォーマットに変換
+      const json = JSON.stringify(baseChatRoomObject);
+      
+      //ファイル保存開始
+      const writable = await handler.createWritable();
+      await writable.write(json);
+
+      //終了したのでファイルを閉じる
+      await writable.close();
+
+    }
+
+    /**
+     * チャットルーム入室のためのチャットルーム読み取り
+     */
+    async function openChatRoomFile() {
+      //もしも他のチャットルームに入室中であれば更新処理を終了させる。
+      if (fileLoadInterval !== null) {
+        clearInterval(fileLoadInterval);
+      }
+
+      //ファイルプロンプトの呼び出し
+      const option = {
+        startIn : "desktop",
+        types: [
+            {
+              description: "チャットルームファイル",
+              accept: { "application/json": [".room"] },
+            },
+          ],
+      };
+
+      //ファイルの取得
+      const [handler] = await window.showOpenFilePicker(option);
+      const file = await handler.getFile();
+      const json = await file.text();
+      
+      //ファイル名となっている部屋名を表示
+      document.getElementById("room-name").innerText = file.name.replace(".room", "");
+      
+      //取得したチャットルームファイルのjsonを読み取ってチャットルームオブジェクトに登録して表示させる
+      chatRoomObject = JSON.parse(json)
+      render()
+
+      //投稿を行うために取得したファイルハンドラをグローバル変数に登録
+      roomFileHandler = handler
+
+      //投稿のたびにファイルを保存するが、最初の１回目だけ保存許可の確認がでる。
+      //タイミングを固定するためにここで空保存しておく。
+      saveRoomFile()    
+
+      //以降５秒おきにファイルの再読み取りを行い他ユーザーの投稿した投稿の反映ができるようにする。
+      fileLoadInterval = setInterval(function(){
+        (async function(){
+          const file = await handler.getFile();
+          const json = await file.text();
+          chatRoomObject = JSON.parse(json)
+          render();
+        })();
+      }, 5000);
+
+    }
+
+    /**
+     * ファイルの書き込み処理
+     */
+    async function saveRoomFile() {
+      //チャットルームオブジェクトをJSONに変換
+      const json = JSON.stringify(chatRoomObject);
+      
+      //ファイル保存開始
+      const writable = await roomFileHandler.createWritable();
+      await writable.write(json);
+
+      //終了したのでファイルを閉じる
+      await writable.close();
+    }
+
+    /**
+     * コメントごとのDOMを作成
+     */
+    function createCommentDom(commentObject) {
+      //ベースのDOM作成
+      const commentDom = document.createElement("div");
+
+      //ユーザー情報のDOM作成
+      const userDom = document.createElement("p");
+      userDom.innerText = commentObject.user;
+
+      //投稿日時のDOM作成
+      const dateTimeDom = document.createElement("p");
+      dateTimeDom.innerText = commentObject.dateTime
+
+      //投稿内容のDOM作成
+      const bodyDom = document.createElement("p");
+      bodyDom.innerText = commentObject.body;
+      
+      //作成したDOMをベースに入れていく
+      commentDom.appendChild(document.createElement("hr"))
+      commentDom.appendChild(userDom);
+      commentDom.appendChild(dateTimeDom);
+      commentDom.appendChild(bodyDom);
+      return commentDom;
+    }
+
+    /**
+     * 現在保持しているチャットルームオブジェクトのコメントを表示
+     */
+    function render() {      
+      //コメント一覧の親DOMの取得
+      const commentListDom = document.getElementById("comment-list");
+      
+      //初期化
+      commentListDom.innerHTML = "";
+
+      //チャットルームオブジェクトのコメント一覧を一つずつDOMにあてはめていく。
+      for (let i = 0; i < chatRoomObject.commentList.length; i++) {
+        commentListDom.prepend(createCommentDom(chatRoomObject.commentList[i]))
+      }
+    }
+
+    /**
+     * 投稿処理
+     */
+    async function post() {
+      //テキストフォームの投稿内容とユーザー名を取得
+      const commentBody = document.getElementById("comment-body").value;
+      const userName = document.getElementById("user-name").value;
+
+      //もしも空欄の時は投稿しない
+      if(commentBody === "" || userName === "") {
+        return;
+      }
+
+      //現在時刻を取得
+      const nowDateTime = new Date(Date.now());
+      const postDateTime = nowDateTime.getFullYear() + "-" + (nowDateTime.getMonth() + 1) + "-" + nowDateTime.getDate() + " " + nowDateTime.getHours() + ":" + nowDateTime.getMinutes() + ":" + nowDateTime.getSeconds();
+      
+      //チャットルームオブジェクトに上書き
+      chatRoomObject.commentList.push({
+        user : userName,
+        dateTime : postDateTime,
+        body : commentBody
+      });
+
+      //上書きしたオブジェクトを表示させる
+      render(chatRoomObject);
+
+      //チャットルームファイルも上書きして他のユーザーにも投稿を反映させる
+      saveRoomFile();
+
+      //処理が終了したのでコメントフォームを空にしておく
+      document.getElementById("comment-body").value = "";
+    }
+
+  </script>
+</body>

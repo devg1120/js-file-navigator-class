@@ -1,0 +1,15 @@
+
+#file-container {
+ width:100vw;
+ height:100vw;
+}
+
+#file-content {
+ width:100vw;
+ height:100vw;
+}
+
+#file-content textarea{
+ width:100vw;
+ height:100vw;
+}

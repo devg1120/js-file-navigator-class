@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>file-tree demo</title>
+        <!--
+    <base href="/file-tree/">
+    -->
+        <meta property="og:title" content="file-tree Web Component" />
+        <meta
+            property="og:description"
+            content="A file tree web component giving access to a device's file system using the File System Access API"
+        />
+        <meta
+            property="og:image"
+            content="https://dannymoerkerke.github.io/file-tree/demo/img/logo.png"
+        />
+        <meta
+            property="og:url"
+            content="https://dannymoerkerke.github.io/file-tree"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="Author" content="Danny Moerkerke" />
+
+        <link
+            href="https://fonts.googleapis.com/css?family=Roboto"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        
+        <link href="demo/css/main.css" rel="stylesheet" />
+
+
+        <script
+            type="text/javascript"
+            src="flex-splitter-directive/index.js"
+        ></script>
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="flex-splitter-directive/styles.min.css"
+        />
+    </head>
+    <body>
+        <section data-flex-splitter-horizontal id="file-container" style="width:100vw;">
+            <file-tree style="min-width:300px;">
+                <button type="button" slot="browse-button">
+                    Open directory
+                </button>
+            </file-tree>
+                <div role="separator" tabindex="1" class="separator"></div>
+            <div id="file-preview">
+                <div class="buttons">
+                    <button
+                        type="button"
+                        id="save-button"
+                        label="Save"
+                        raised
+                        disabled
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="button"
+                        id="save-as-button"
+                        label="Save as..."
+                        raised
+                        disabled
+                    >
+                        Save as...
+                    </button>
+                </div>
+                <div role="separator" tabindex="1" class="separator"></div>
+                <div id="file-content"></div>
+
+                <div role="separator" tabindex="1" class="separator"></div>
+                <div id="search">
+                    <div id="search-container">
+                        <div class="controls">
+                            <div id="search-type">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="search-type"
+                                        value="files"
+                                        checked
+                                    />
+                                    Search files
+                                </label>
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="search-type"
+                                        value="in-files"
+                                    />
+                                    Search in files
+                                </label>
+                            </div>
+                            <input
+                                type="text"
+                                name="query"
+                                placeholder="Search"
+                                disabled
+                            />
+                        </div>
+                        <div id="search-results"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script src="demo/js/demo.js" type="module"></script>
+    </body>
+</html>

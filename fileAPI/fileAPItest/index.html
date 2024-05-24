@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>file-tree demo</title>
+
+<style>
+.box {
+	border: #4e7bcc 1px solid;
+	background-color: #cce5ff;
+	padding:10px;
+	height: 200px;
+}
+.box p {
+	margin:0;
+	padding:0;
+}
+</style>
+    </head>
+    <body>
+	    <label for="name"> FILE PICKER by input</label>
+            <div>
+	    <input type="file" id="name" name="name"  />
+            </div>
+
+	    <hr class="line">
+
+	    <label for="name"> FILE PICKER by API</label>
+            <div>
+            <button id="file-select" > FILE PICKER</button>
+            </div>
+
+	    <hr class="line">
+
+	    <label for="name"> FILE SYSTEM ACCESS API</label>
+	    <div id="dropbox" class="box">
+		    <p>Drop</p>
+	    </div>
+
+	    <hr class="line">
+
+	    <label for="name">FILE PATH:</label>
+
+	    <input type="text" id="input-path" name="name" required minlength="140" maxlength="256" size="140" 
+	     value="file:///C:/Users/devg1/OneDrive/デスクトップ/iSEC/IX/IX操作.txt"/>
+            <button id="path-fix" >FIX</button>
+
+        <script src="test.js" type="module"></script>
+    </body>
+</html>

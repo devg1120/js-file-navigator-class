@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SLOT sample</title>
+  <meta http-equiv="Content-Type" 
+      content="text/html; charset=utf-8">
+</head>
+<body>
+
+<template id="my-template">
+
+   <style>
+   div {
+      margin: 0 0 1.2em;
+      border: 1px #c0c0c0 solid;
+      font-weight: bold;
+   }
+   </style>
+
+   <div>
+      <slot name="sei">姓</slot>
+      <slot name="mei">名</slot>
+   </div>
+
+</template>
+
+
+<my-element>
+<span slot="sei">山田</span>
+<span slot="mei">太郎</span>
+</my-element>
+
+<my-element>
+<span slot="sei">鈴木</span>
+<span slot="mei">花子</span>
+</my-element>
+
+
+<script>
+
+   customElements.define('my-element',
+      class extends HTMLElement {
+         constructor() {
+            super();
+            var template = document.getElementById('my-template').content;
+            var shadowRoot = this.attachShadow({mode: 'open'})
+                             .appendChild(template.cloneNode(true));
+         }
+      }
+   );
+
+</script>
+
+</body>
