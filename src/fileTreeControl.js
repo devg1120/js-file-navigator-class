@@ -1,7 +1,6 @@
 import { marked } from "../marked/lib/marked.esm.js";
-//import * as ace from '../ace/build/src-noconflict/ace.js';
-
-
+//import * as ace from '../ace-builds/src/ace.js';
+//import * as monaco from  '../monaco-editor/out/monaco-editor/esm/vs/editor/editor.main.js'
 
 export class FileTreeControl {
   constructor() {
@@ -22,12 +21,18 @@ export class FileTreeControl {
     this.searchResults.addEventListener("click", this.openFoundFile);
     //this.that = this;
      this.editor = null;
-     this.set_ace_editor_use = false;
+     this.ace_editor_use = false;
+     this.monaco_editor_use = false;
   }
 
   set_ace_editor () {
      this.ace_editor_use = true;
+     this.monaco_editor_use = false;
+  }
 
+  set_monaco_editor () {
+     this.monaco_editor_use = true;
+     this.ace_editor_use = false;
   }
 
   openFile = ({ detail }) => {
@@ -56,7 +61,7 @@ export class FileTreeControl {
           this.fileContent.innerHTML = marked.parse(contents);
           break;
         }
-
+/*
       default:
         if (!this.ace_editor_use ) {
            this.fileContent.innerHTML = `<textarea>${contents}</textarea>`;
@@ -75,20 +80,52 @@ export class FileTreeControl {
 	}
         this.saveButton.disabled = false;
         this.saveAsButton.disabled = false;
+*/
+
+      default:
+        if (this.ace_editor_use ) {
+            if ( this.editor != null) {
+                this.editor.destroy() ;
+            } 
+            this.editor = ace.edit("file-content");
+
+            //this.editor.setTheme("ace/theme/monokai");
+            this.editor.setTheme("ace/theme/idle_fingers");
+            //this.editor.setTheme("ace/theme/one_Dark");
+            this.editor.getSession().setMode("ace/mode/python");
+            this.editor.setFontSize(18);
+            this.editor.setValue(contents) ;
+	} else if (this.monaco_editor_use ) {
+            if ( this.editor != null) {
+                this.editor.setValue(contents) ;
+            } else {
+            this.editor = monaco.editor.create(
+              document.getElementById("file-content"),
+              {
+                value: contents,
+                //language: "javascript",
+              }
+            );
+	    };
+        } else {
+           this.fileContent.innerHTML = `<textarea>${contents}</textarea>`;
+	}
+        this.saveButton.disabled = false;
+        this.saveAsButton.disabled = false;
     }
   };
 
   saveFile = () => {
-        if (!this.ace_editor_use ) {
-    this.fileTree.saveFile(fileContent.querySelector("textarea").value);
+        if (!this.ace_editor_use && !this.monaco_editor_use) {
+    this.fileTree.saveFile(this.fileContent.querySelector("textarea").value);
 	} else {
     this.fileTree.saveFile(this.editor.getValue());
 	}
   };
 
   saveFileAs = () => {
-        if (!this.ace_editor_use ) {
-    this.fileTree.saveFileAs(fileContent.querySelector("textarea").value);
+        if (!this.ace_editor_use && !this.monaco_editor_use) {
+    this.fileTree.saveFileAs(this.fileContent.querySelector("textarea").value);
 	} else {
     this.fileTree.saveFileAs(this.editor.getValue());
 	}

@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>file-tree demo</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>file-tree demo</title>
 
-	<!--
+    <!--
         <meta property="og:title" content="file-tree Web Component" />
         <meta property="og:description" content="A file tree web component giving access to a device's file system using the File System Access API" />
         <meta property="og:image" content="https://dannymoerkerke.github.io/file-tree/demo/img/logo.png" />
@@ -13,64 +13,115 @@
         <meta name="Author" content="Danny Moerkerke" />
 	-->
 
-        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
-        <link href="demo/css/main.css" rel="stylesheet" />
+    <link href="demo/css/main.css" rel="stylesheet" />
 
-        <script type="text/javascript" src="flex-splitter-directive/index.js"></script>
-        <link rel="stylesheet" type="text/css" href="flex-splitter-directive/styles.min.css" />
-<!--
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js"></script>
-   <script src="ace-builds/src-noconflict/ace.js"></script>
-  -->
-   <script src="ace-builds/src/ace.js"></script>
+    <script
+      type="text/javascript"
+      src="flex-splitter-directive/index.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="flex-splitter-directive/styles.min.css"
+    />
 
-    </head>
-    <body>
-        <section data-flex-splitter-horizontal id="container" >
-            <div data-flex-splitter-vertical id="file-container" >
+    <!---- node module -->
+    <!--     
+      <script>
+          var require = { paths: { vs: './node_modules/monaco-editor/min/vs' } };
+      </script>
+      <script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
+      <script src="./node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+      <script src="./node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+     -->
 
-                <file-tree style="height:50%;">
-			<button type="button" slot="browse-button">Open directory</button>
-			<label id="topdir" slot="browse-path">-------------</label>
-                </file-tree>
+    <!--     
+     <script src="./node_modules/ace-builds/src/ace.js"></script>
+     -->
 
+    <!---- local module -->
+    <!--     
+      <script>
+          var require = { paths: { vs: './monaco-editor/min/vs' } };
+      </script>
+      <script src="./monaco-editor/min/vs/loader.js"></script>
+      <script src="./monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+      <script src="./monaco-editor/min/vs/editor/editor.main.js"></script>
+     -->
+    <script src="./ace-builds/src/ace.js"></script>
+  </head>
+  <body>
+    <section data-flex-splitter-horizontal id="container">
+      <div data-flex-splitter-vertical id="file-container">
+        <file-tree style="height: 50%">
+          <button type="button" slot="browse-button">Open directory</button>
+          <label id="topdir" slot="browse-path">-------------</label>
+        </file-tree>
 
-                <div role="separator" tabindex="1" class="separator"></div>
+        <div role="separator" tabindex="1" class="separator"></div>
 
-                <div id="search">
-                    <div id="search-container">
-                        <div class="controls">
-                            <div id="search-type">
-                                <label>
-                                    <input type="radio" name="search-type" value="files" checked />
-                                    Search path-names
-                                </label>
+        <div id="search">
+          <div id="search-container">
+            <div class="controls">
+              <div id="search-type">
+                <label>
+                  <input
+                    type="radio"
+                    name="search-type"
+                    value="files"
+                    checked
+                  />
+                  Search path-names
+                </label>
 
-                                <label>
-                                    <input type="radio" name="search-type" value="in-files" />
-                                    Search in files
-                                </label>
-                            </div>
-                            <input id="search-input" type="text" name="query" placeholder="gsSearch" disabled />
-                        </div>
-                        <div id="search-results"></div>
-                    </div>
-                </div>
+                <label>
+                  <input type="radio" name="search-type" value="in-files" />
+                  Search in files
+                </label>
+              </div>
+              <input
+                id="search-input"
+                type="text"
+                name="query"
+                placeholder="gsSearch"
+                disabled
+              />
             </div>
-            <div role="separator" tabindex="1" class="separator"></div>
-            <div id="file-preview">
-                <div id="file-preview-header" class="buttons">
-                    <button type="button" id="save-button" label="Save" raised disabled>Save</button>
-                    <button type="button" id="save-as-button" label="Save as..." raised disabled>Save as...</button>
-                </div>
-		<!--
+            <div id="search-results"></div>
+          </div>
+        </div>
+      </div>
+      <div role="separator" tabindex="1" class="separator"></div>
+      <div id="file-preview">
+        <div id="file-preview-header" class="buttons">
+          <button type="button" id="save-button" label="Save" raised disabled>
+            Save
+          </button>
+          <button
+            type="button"
+            id="save-as-button"
+            label="Save as..."
+            raised
+            disabled
+          >
+            Save as...
+          </button>
+        </div>
+        <!--
                 <div role="separator" tabindex="1" class="separator"></div>
 		-->
-                <div id="file-content"></div>
-            </div>
-        </section>
-        <script src="demo/js/demo2.js" type="module"></script>
-    </body>
+        <div id="file-content"></div>
+      </div>
+    </section>
+    <script src="demo/js/demo2.js" type="module"></script>
+  </body>
 </html>
